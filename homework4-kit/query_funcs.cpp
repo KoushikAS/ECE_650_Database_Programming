@@ -1,3 +1,7 @@
+/**
+citations 
+1) https://www.tutorialspoint.com/postgresql/postgresql_c_cpp.htm
+**/
 #include "query_funcs.h"
 
 #include <iostream>
