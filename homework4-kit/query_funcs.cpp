@@ -204,7 +204,34 @@ void query3(connection * C, string team_name) {
 }
 
 void query4(connection * C, string team_state, string team_color) {
+  nontransaction N(*C);
+  C->prepare("query4",
+             "SELECT PLAYER.UNIFORM_NUM, PLAYER.FIRST_NAME, PLAYER.LAST_NAME FROM "
+             "PLAYER, TEAM, STATE, COLOR WHERE PLAYER.TEAM_ID = TEAM.TEAM_ID AND "
+             "TEAM.STATE_ID = STATE.STATE_ID AND COLOR.COLOR_ID = TEAM.COLOR_ID AND "
+             "STATE.NAME = $1 AND COLOR.NAME = $2");
+  result R(N.prepared("query4")(team_state)(team_color).exec());
+
+  cout << "UNIFORM_NUM FIRST_NAME LAST_NAME" << endl;
+  for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
+    cout << c[0] << " " << c[1] << " " << c[2] << endl;
+  }
+
+  C->disconnect();
 }
 
 void query5(connection * C, int num_wins) {
+  nontransaction N(*C);
+  C->prepare("query5",
+             "SELECT PLAYER.FIRST_NAME, PLAYER.LAST_NAME, TEAM.NAME, TEAM.WINS FROM "
+             "PLAYER, TEAM WHERE PLAYER.TEAM_ID = TEAM.TEAM_ID AND "
+             "TEAM.WINS > $1 ");
+  result R(N.prepared("query5")(num_wins).exec());
+
+  cout << "UNIFORM_NUM FIRST_NAME LAST_NAME" << endl;
+  for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
+    cout << c[0] << " " << c[1] << " " << c[2] << " " << c[3] << endl;
+  }
+
+  C->disconnect();
 }
