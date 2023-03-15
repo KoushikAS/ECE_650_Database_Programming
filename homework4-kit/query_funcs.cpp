@@ -189,6 +189,18 @@ void query2(connection * C, string team_color) {
 }
 
 void query3(connection * C, string team_name) {
+  nontransaction N(*C);
+  C->prepare("query3",
+             "SELECT PLAYER.FIRST_NAME, PLAYER.LAST_NAME FROM PLAYER, TEAM WHERE "
+             "PLAYER.TEAM_ID = TEAM.TEAM_ID AND TEAM.NAME = $1 ORDER BY PPG DESC");
+  result R(N.prepared("query3")(team_name).exec());
+
+  cout << "FIRST_NAME LAST_NAME" << endl;
+  for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
+    cout << c[0] << " " << c[1] << endl;
+  }
+
+  C->disconnect();
 }
 
 void query4(connection * C, string team_state, string team_color) {
