@@ -170,9 +170,22 @@ void query1(connection * C,
          << c[5] << " " << c[6] << " " << c[7] << " " << c[8] << " " << c[9] << " "
          << c[10] << " " << c[11] << endl;
   }
+  C->disconnect();
 }
 
 void query2(connection * C, string team_color) {
+  nontransaction N(*C);
+  C->prepare("query2",
+             "SELECT TEAM.NAME FROM TEAM, COLOR WHERE TEAM.COLOR_ID = COLOR.COLOR_ID AND "
+             "COLOR.NAME = $1");
+  result R(N.prepared("query2")(team_color).exec());
+
+  cout << "NAME" << endl;
+  for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
+    cout << c[0] << endl;
+  }
+
+  C->disconnect();
 }
 
 void query3(connection * C, string team_name) {
