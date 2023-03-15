@@ -46,6 +46,69 @@ void readColor(connection * C) {
   }
 }
 
+void readTeam(connection * C) {
+  fstream team_file;
+  team_file.open("team.txt", ios::in);
+  if (team_file.is_open()) {
+    string line, word;
+    while (getline(team_file, line)) {
+      stringstream s(line);
+      getline(s, word, ' ');
+      int id = stoi(word);
+      getline(s, word, ' ');
+      string name = word;
+      getline(s, word, ' ');
+      int state_id = stoi(word);
+      getline(s, word, ' ');
+      int color_id = stoi(word);
+      getline(s, word, ' ');
+      int wins = stoi(word);
+      getline(s, word, ' ');
+      int looses = stoi(word);
+
+      add_team(C, name, state_id, color_id, wins, looses);
+    }
+    team_file.close();
+  }
+}
+
+void readPlayer(connection * C) {
+  fstream player_file;
+  player_file.open("player.txt", ios::in);
+  if (player_file.is_open()) {
+    string line, word;
+    while (getline(player_file, line)) {
+      stringstream s(line);
+      getline(s, word, ' ');
+      int id = stoi(word);
+      getline(s, word, ' ');
+      int team_id = stoi(word);
+      getline(s, word, ' ');
+      int jersey_num = stoi(word);
+      getline(s, word, ' ');
+      string first_name = word;
+      getline(s, word, ' ');
+      string last_name = word;
+      getline(s, word, ' ');
+      int mpg = stoi(word);
+      getline(s, word, ' ');
+      int ppg = stoi(word);
+      getline(s, word, ' ');
+      int rpg = stoi(word);
+      getline(s, word, ' ');
+      int apg = stoi(word);
+      getline(s, word, ' ');
+      double spg = stod(word);
+      getline(s, word, ' ');
+      double bpg = stod(word);
+
+      add_player(
+          C, team_id, jersey_num, first_name, last_name, mpg, ppg, rpg, apg, spg, bpg);
+    }
+    player_file.close();
+  }
+}
+
 int main(int argc, char * argv[]) {
   //Allocate & initialize a Postgres connection object
   connection * C;
@@ -70,6 +133,8 @@ int main(int argc, char * argv[]) {
   initalize_db(C);
   readState(C);
   readColor(C);
+  readTeam(C);
+  readPlayer(C);
   //TODO: create PLAYER, TEAM, STATE, and COLOR tables in the ACC_BBALL database
   //      load each table with rows from the provided source txt files
 

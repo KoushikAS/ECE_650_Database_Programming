@@ -5,19 +5,20 @@
 void initalize_db(connection * C) {
   char * sql =
       "DROP TABLE IF EXISTS COLOR, STATE, TEAM, PLAYER;"
-      "CREATE TABLE COLOR(COLOR_ID SERIAL NOT NULL, NAME TEXT "
-      "NOT NULL, PRIMARY KEY(COLOR_ID));"
-      "CREATE TABLE STATE(STATE_ID SERIAL NOT NULL, NAME TEXT "
-      "NOT NULL, PRIMARY KEY(STATE_ID));"
-      "CREATE TABLE TEAM(TEAM_ID INT PRIMARY KEY NOT NULL, NAME TEXT NOT NULL, STATE_ID "
-      "INT NOT NULL, COLOR_ID INT NOT NULL, WINS INT, LOOSES INT, CONSTRAINT "
-      "FK_STATE_TEAM FOREIGN "
+      "CREATE TABLE COLOR(COLOR_ID SERIAL PRIMARY KEY NOT NULL, NAME TEXT "
+      "NOT NULL);"
+      "CREATE TABLE STATE(STATE_ID SERIAL PRIMARY KEY NOT NULL, NAME TEXT "
+      "NOT NULL);"
+      "CREATE TABLE TEAM(TEAM_ID SERIAL PRIMARY KEY NOT NULL, NAME TEXT NOT NULL, "
+      "STATE_ID INT NOT NULL, COLOR_ID INT NOT NULL, WINS INT, LOOSES INT, "
+      "CONSTRAINT FK_STATE_TEAM FOREIGN "
       "KEY(STATE_ID) REFERENCES STATE(STATE_ID) ON DELETE CASCADE,  CONSTRAINT "
       "FK_COLOR_TEAM FOREIGN "
       "KEY(COLOR_ID) REFERENCES COLOR(COLOR_ID) ON DELETE CASCADE);"
-      "CREATE TABLE PLAYER(PLAYER_ID INT PRIMARY KEY NOT NULL, TEAM_ID INT NOT NULL, "
-      "UNIFORM_NUM INT, FIRST_NAME TEXT, LAST_NAME TEXT, MPG INT, PPG INT, RPG INT, ARG "
-      "INT, SPG INT, BPG INT, CONSTRAINT FK_TEAM_PLAYER FOREIGN "
+      "CREATE TABLE PLAYER(PLAYER_ID SERIAL PRIMARY KEY NOT NULL, TEAM_ID INT NOT NULL, "
+      "UNIFORM_NUM INT, FIRST_NAME TEXT, LAST_NAME TEXT, MPG INT, PPG INT, RPG INT, APG "
+      "INT, SPG DOUBLE PRECISION, BPG DOUBLE PRECISION, CONSTRAINT FK_TEAM_PLAYER "
+      "FOREIGN "
       "KEY(TEAM_ID) REFERENCES TEAM(TEAM_ID) ON DELETE CASCADE);";
 
   work W(*C);
@@ -36,6 +37,14 @@ void add_player(connection * C,
                 int apg,
                 double spg,
                 double bpg) {
+  work W(*C);
+  C->prepare("insert_player",
+             "INSERT INTO PLAYER (TEAM_ID, UNIFORM_NUM, FIRST_NAME, LAST_NAME, MPG, PPG, "
+             "RPG, APG, SPG, BPG) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)");
+  W.prepared("insert_player")(team_id)(jersey_num)(first_name)(last_name)(mpg)(ppg)(rpg)(
+       apg)(spg)(bpg)
+      .exec();
+  W.commit();
 }
 
 void add_team(connection * C,
@@ -44,6 +53,12 @@ void add_team(connection * C,
               int color_id,
               int wins,
               int losses) {
+  work W(*C);
+  C->prepare("insert_team",
+             "INSERT INTO TEAM (NAME, STATE_ID, COLOR_ID, WINS, LOOSES) VALUES "
+             "($1,$2,$3,$4,$5)");
+  W.prepared("insert_team")(name)(state_id)(color_id)(wins)(losses).exec();
+  W.commit();
 }
 
 void add_state(connection * C, string name) {
