@@ -1,7 +1,9 @@
 #include "query_funcs.h"
 
+#include <iostream>
 #include <pqxx/pqxx>
 
+using namespace std;
 void initalize_db(connection * C) {
   char * sql =
       "DROP TABLE IF EXISTS COLOR, STATE, TEAM, PLAYER;"
@@ -75,6 +77,28 @@ void add_color(connection * C, string name) {
   W.commit();
 }
 
+string buildWhereClause(bool whereFlag, int min, int max, string field_name) {
+  string where = "";
+  if (whereFlag == true) {
+    where.append(" AND ");
+  }
+  where.append(" " + field_name + " >= " + to_string(min) + " AND " + field_name +
+               " <= " + to_string(max));
+
+  return where;
+}
+
+string buildWhereClause(bool whereFlag, double min, double max, string field_name) {
+  string where = "";
+  if (whereFlag == true) {
+    where.append(" AND ");
+  }
+  where.append(" " + field_name + " >= " + to_string(min) + " AND " + field_name +
+               " <= " + to_string(max));
+
+  return where;
+}
+
 /*
  * All use_ params are used as flags for corresponding attributes
  * a 1 for a use_ param means this attribute is enabled (i.e. a WHERE clause is needed)
@@ -99,6 +123,53 @@ void query1(connection * C,
             int use_bpg,
             double min_bpg,
             double max_bpg) {
+  string sql = "SELECT * from PLAYER";
+  bool whereFlag = false;
+  string where = "";
+  if (use_mpg == 1) {
+    where.append(buildWhereClause(whereFlag, min_mpg, max_mpg, "MPG"));
+    whereFlag = true;
+  }
+
+  if (use_ppg == 1) {
+    where.append(buildWhereClause(whereFlag, min_ppg, max_ppg, "PPG"));
+    whereFlag = true;
+  }
+
+  if (use_rpg == 1) {
+    where.append(buildWhereClause(whereFlag, min_rpg, max_rpg, "RPG"));
+    whereFlag = true;
+  }
+
+  if (use_apg == 1) {
+    where.append(buildWhereClause(whereFlag, min_apg, max_apg, "APG"));
+    whereFlag = true;
+  }
+
+  if (use_spg == 1) {
+    where.append(buildWhereClause(whereFlag, min_spg, max_spg, "SPG"));
+    whereFlag = true;
+  }
+
+  if (use_bpg == 1) {
+    where.append(buildWhereClause(whereFlag, min_bpg, max_bpg, "BPG"));
+    whereFlag = true;
+  }
+
+  if (whereFlag == true) {
+    sql.append(" where " + where);
+  }
+
+  cout << "PLAYER_ID TEAM_ID UNIFORM_NUM FIRST_NAME LAST_NAME MPG PPG RPG APG SPG BPG"
+       << endl;
+  nontransaction N(*C);
+  result R(N.exec(sql));
+
+  for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
+    cout << c[0] << " " << c[1] << " " << c[2] << " " << c[3] << " " << c[4] << " "
+         << c[5] << " " << c[6] << " " << c[7] << " " << c[8] << " " << c[9] << " "
+         << c[10] << " " << c[11] << endl;
+  }
 }
 
 void query2(connection * C, string team_color) {

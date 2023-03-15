@@ -1,6 +1,8 @@
 #include "exerciser.h"
 
-void exercise(connection *C)
-{
+#include <iostream>
 
+using namespace std;
+void exercise(connection * C) {
+  query1(C, 1, 35, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
