@@ -127,7 +127,9 @@ void query1(connection * C,
             int use_bpg,
             double min_bpg,
             double max_bpg) {
-  string sql = "SELECT * from PLAYER";
+  string sql = "SELECT PLAYER_ID, TEAM_ID, UNIFORM_NUM, FIRST_NAME, LAST_NAME, MPG, PPG, "
+               "RPG, APG, trim(to_char(SPG,'9999999999999990D9')), "
+               "trim(to_char(BPG,'99999999999999990D9')) from PLAYER";
   bool whereFlag = false;
   string where = "";
   if (use_mpg == 1) {
