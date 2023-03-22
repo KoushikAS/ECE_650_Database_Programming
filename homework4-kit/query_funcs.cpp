@@ -234,7 +234,7 @@ void query5(connection * C, int num_wins) {
              "TEAM.WINS > $1 ");
   result R(N.prepared("query5")(num_wins).exec());
 
-  cout << "UNIFORM_NUM FIRST_NAME LAST_NAME" << endl;
+  cout << "FIRST_NAME LAST_NAME NAME WINS" << endl;
   for (result::const_iterator c = R.begin(); c != R.end(); ++c) {
     cout << c[0] << " " << c[1] << " " << c[2] << " " << c[3] << endl;
   }
